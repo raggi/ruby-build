@@ -1,0 +1,33 @@
+install_package "yaml-0.1.4" "http://pyyaml.org/download/libyaml/yaml-0.1.4.tar.gz#36c852831d02cf90508c29852361d01b"
+
+build_package_railsexpress() {
+  local package_name="$1"
+ 
+  {
+		patchroot="https://raw.github.com/wayneeseguin/rvm/master/patches/ruby/1.9.3/p362/railsexpress/"
+		patches=(
+			01-fix-make-clean.patch
+			02-railsbench-gc.patch
+			03-display-more-detailed-stack-trace.patch
+			04-fork-support-for-gc-logging.patch
+			05-track-live-dataset-size.patch
+			06-webrick_204_304_keep_alive_fix.patch
+			07-export-a-few-more-symbols-for-ruby-prof.patch
+			08-thread-variables.patch
+			09-faster-loading.patch
+			# 10-falcon-st-opt.patch
+			# 11-falcon-sparse-array.patch
+			# 12-falcon-array-queue.patch
+		)
+
+		for patch in ${patches[@]}; do
+			curl -o $patch $patchroot$patch
+			patch -p1 < $patch
+		done
+
+    autoconf
+  } >&4 2>&1
+ 
+}
+
+install_package "ruby-1.9.3-p374" "http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p374.tar.gz#90b6c327abcdf30a954c2d6ae44da2a9" railsexpress standard
